@@ -58,12 +58,12 @@ def create_sklearn_pipeline(model):
     ]
   )
 
-def sampling_pipeline(model, sampling_pipeline, kbest=None):
+def sampling_pipeline(model, sampling_model, kbest=None):
   
   steps = [
     ("Scaler", StandardScaler()),
     ("PowerTransformer", PowerTransformer()),
-    ("sampling", sampling_pipeline),
+    ("sampling", sampling_model),
     ("model", model)
   ]
   
@@ -103,7 +103,6 @@ def pca_analysis(X):
     plt.show()
     
     return df
-
 
 def plot_dataset(df, visual_type):
   
