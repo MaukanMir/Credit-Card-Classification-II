@@ -6,7 +6,7 @@ from scipy.stats import skew, kurtosis, f_oneway
 
 # Preprocessing 
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, LabelEncoder, PowerTransformer
+from sklearn.preprocessing import StandardScaler, PowerTransformer
 
 # Model Selection and Metrics
 from sklearn.model_selection import RepeatedStratifiedKFold, RandomizedSearchCV, GridSearchCV, cross_val_predict, cross_val_score
@@ -47,3 +47,19 @@ def check_class_imbalance(target):
   plt.xlabel("Target Classes")
   plt.ylabel("Counts")
   plt.show()
+
+def sampling_pipeline(model, sampling_pipeline, kbest=None):
+  
+  steps = [
+    ("Scaler", StandardScaler()),
+    ("PowerTransformer", PowerTransformer()),
+    ("sampling", sampling_pipeline),
+    ("model", model)
+  ]
+  
+  if kbest:
+    steps.insert(2, ("Feature Selection", kbest))
+  
+  return imb_pipeline(
+    steps=steps
+  )
