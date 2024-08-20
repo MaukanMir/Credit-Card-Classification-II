@@ -48,6 +48,16 @@ def check_class_imbalance(target):
   plt.ylabel("Counts")
   plt.show()
 
+def create_sklearn_pipeline(model):
+  
+  return Pipeline(
+    steps=[
+      ("Scaler", StandardScaler()),
+      ("PowerTransformer", PowerTransformer()),
+      ("model", model)
+    ]
+  )
+
 def sampling_pipeline(model, sampling_pipeline, kbest=None):
   
   steps = [
