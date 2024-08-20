@@ -186,7 +186,7 @@ def test_selected_models(model_names, models, X, y, scoring_metric, kbest=None):
   metric_tracker = []
   
   for model, model_name in zip(models, model_names):
-    pipeline = create_sklearn_pipeline(preprocessor, model, kbest) if kbest else create_sklearn_pipeline(preprocessor, model) 
+    pipeline = sampling_pipeline(model, kbest) if kbest else sampling_pipeline(model) 
     scores = evaluate_model(pipeline, X, y, scoring_metric)
     metric_tracker.append({
       "Model": model_name,
@@ -201,3 +201,26 @@ def test_selected_models(model_names, models, X, y, scoring_metric, kbest=None):
   
   performance_df = pd.DataFrame(metric_tracker).sort_values(by="Mean", ascending=False)
   return performance_df
+
+def test_kbest_columns(preprocessor, X, y, model, model_name, kbest):
+  
+  metric_tracker = []
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, stratify=y, random_state=42)
+  for k in range(1, X.shape[1]+1):
+    metric = SelectKBest(score_func=kbest, k=k)
+    pipeline = create_sklearn_pipeline(preprocessor, model, metric)
+    
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+    acc, recall_metric, precision_metric, f1_metric = get_metrics(y_test, y_pred)
+
+    metric_tracker.append({
+        "Model": model_name,
+        "K":k,
+        "acc_metric": acc,
+        "f1_metric": f1_metric,
+        "recall":recall_metric,
+        "precision":precision_metric
+      })
+  
+  return pd.DataFrame(metric_tracker)
